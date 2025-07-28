@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 18th Birthday, Attorney Michelle!</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .parcel {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(60,60,60,0.2);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .parcel h1 {
+            color: #43c6ac;
+            font-size: 2.5em;
+            margin-bottom: 0.2em;
+        }
+        .parcel h2 {
+            color: #f7971e;
+            margin-top: 0;
+        }
+        .parcel p {
+            font-size: 1.2em;
+            color: #333;
+        }
+        .confetti {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .gift-box {
+            margin: 30px auto 0 auto;
+            width: 120px;
+            height: 120px;
+            background: #43c6ac;
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(67,198,172,0.2);
+            transition: transform 0.2s;
+        }
+        .gift-box:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+        .gift-lid {
+            width: 120px;
+            height: 30px;
+            background: #f7971e;
+            border-radius: 16px 16px 6px 6px;
+            position: absolute;
+            top: -30px;
+            left: 0;
+            transition: top 0.5s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        .gift-box.open .gift-lid {
+            top: -70px;
+        }
+        .ribbon {
+            width: 20px;
+            height: 120px;
+            background: #fff;
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            border-radius: 10px;
+        }
+        .surprise-message {
+            display: none;
+            margin-top: 30px;
+            font-size: 1.5em;
+            color: #43c6ac;
+            animation: pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        .parcel.open .surprise-message {
+            display: block;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.7); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="confetti"></canvas>
+    <div class="parcel" id="parcel">
+        <h1>Happy 18th Birthday!</h1>
+        <h2>Attorney Michelle</h2>
+        <p>Wishing you a day filled with joy, laughter, and wonderful surprises as you celebrate this special milestone. Welcome to adulthood!</p>
+        <div class="riddle-section" id="riddleSection">
+            <p style="font-weight:bold; color:#f7971e;">Solve the riddle to unlock your birthday surprise:</p>
+            <p id="riddleText">I am taken before you get it, what am I?</p>
+            <input type="text" id="riddleAnswer" placeholder="Your answer..." style="padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:8px;">
+            <button id="submitRiddle" style="padding:8px 16px; border:none; background:#43c6ac; color:#fff; border-radius:6px; margin-left:8px; cursor:pointer;">Unlock</button>
+            <div id="riddleFeedback" style="margin-top:10px; color:#d32f2f;"></div>
+        </div>
+        <div class="gift-box" id="giftBox" style="pointer-events:none; opacity:0.5;">
+            <div class="gift-lid"></div>
+            <div class="ribbon"></div>
+        </div>
+        <div class="surprise-message" id="surpriseMessage" style="text-align:center;">
+            <div id="surpriseContent">
+                🎉 You’re officially 18! The world is yours to conquer. Enjoy your special day! 🎂
+            </div>
+        </div>
+    </div>
+    <script>
+        // Confetti animation
+        const canvas = document.querySelector('.confetti');
+        const ctx = canvas.getContext('2d');
+        let W = window.innerWidth, H = window.innerHeight;
+        canvas.width = W; canvas.height = H;
+        let confetti = [];
+        for(let i=0;i<150;i++){
+            confetti.push({
+                x: Math.random()*W,
+                y: Math.random()*H - H,
+                r: Math.random()*6+4,
+                d: Math.random()*150+50,
+                color: `hsl(${Math.random()*360},80%,60%)`,
+                tilt: Math.random()*10-10
+            });
+        }
+        function drawConfetti(){
+            ctx.clearRect(0,0,W,H);
+            confetti.forEach(c=>{
+                ctx.beginPath();
+                ctx.arc(c.x,c.y,c.r,0,2*Math.PI);
+                ctx.fillStyle = c.color;
+                ctx.fill();
+            });
+            updateConfetti();
+        }
+        function updateConfetti(){
+            confetti.forEach(c=>{
+                c.y += Math.cos(c.d) + 2 + c.r/2;
+                c.x += Math.sin(c.d);
+                if(c.y > H){
+                    c.x = Math.random()*W;
+                    c.y = -10;
+                }
+            });
+        }
+        setInterval(drawConfetti,20);
+        window.addEventListener('resize',()=>{
+            W = window.innerWidth; H = window.innerHeight;
+            canvas.width = W; canvas.height = H;
+        });
+        // Riddle unlock logic
+        const giftBox = document.getElementById('giftBox');
+        const parcel = document.getElementById('parcel');
+        const surpriseMessage = document.getElementById('surpriseMessage');
+        const riddleSection = document.getElementById('riddleSection');
+        const riddleAnswer = document.getElementById('riddleAnswer');
+        const submitRiddle = document.getElementById('submitRiddle');
+        const riddleFeedback = document.getElementById('riddleFeedback');
+        let unlocked = false;
+        submitRiddle.addEventListener('click', () => {
+            const answer = riddleAnswer.value.trim().toLowerCase();
+            if (answer === 'picture' || answer === 'a picture') {
+                riddleFeedback.style.color = '#43c6ac';
+                riddleFeedback.textContent = 'Correct! Click the gift box to open your surprise!';
+                giftBox.style.pointerEvents = 'auto';
+                giftBox.style.opacity = '1';
+                unlocked = true;
+            } else {
+                riddleFeedback.style.color = '#d32f2f';
+                riddleFeedback.textContent = 'Oops! Try again.';
+            }
+        });
+        giftBox.addEventListener('click',()=>{
+            if (!unlocked) return;
+            giftBox.classList.add('open');
+            parcel.classList.add('open');
+            setTimeout(()=>{
+                // Show hardcoded image and song as the surprise
+                const surpriseContent = document.getElementById('surpriseContent');
+                surpriseContent.innerHTML = `
+                    <div style=\"margin-bottom:16px;\">🎉 You’re officially 18! The world is yours to conquer. Enjoy your special day! 🎂</div>
+                    <img src=\"michy.jpg\" alt=\"Michelle's Picture\" style=\"max-width:200px; max-height:200px; border-radius:16px; box-shadow:0 4px 16px #ccc; margin-bottom:16px;\">
+                    <div style=\"margin-top:20px;\">
+                        <audio controls autoplay>
+                            <source src=\"bh.mp3\" type=\"audio/mpeg\">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <video controls autoplay style="margin-top:20px;">
+                            <source src="mi.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                    </div>
+                `;
+                surpriseMessage.style.display = 'block';
+            }, 500);
+        });
+    </script>
+</body>
+</html>

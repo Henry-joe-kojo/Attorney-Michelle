@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Birthday Surprise, Michelle!</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .container {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(60,60,60,0.2);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            color: #43c6ac;
+            font-size: 2.2em;
+            margin-bottom: 0.2em;
+        }
+        .pic {
+            margin: 30px auto 0 auto;
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px #ccc;
+        }
+        .caption {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #f7971e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Here is your birthday surprise, Michelle!</h1>
+        <div id="picContainer"></div>
+        <div class="caption">Happy 18th Birthday! 🎉</div>
+        <audio id="birthdaySong" controls autoplay style="margin-top:20px;">
+            <source src="bh.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    <script>
+        // Get the image data from the URL hash
+        const params = new URLSearchParams(window.location.hash.slice(1));
+        const imgData = params.get('img');
+        if (imgData) {
+            document.getElementById('picContainer').innerHTML = `<img src="${decodeURIComponent(imgData)}" class="pic" alt="Your Picture">`;
+        } else {
+            document.getElementById('picContainer').innerHTML = '<div style="color:#d32f2f;">No picture found. Please go back and upload your picture.</div>';
+        }
+        // Play song automatically
+        document.getElementById('birthdaySong').play();
+    </script>
+</body>
+</html>
